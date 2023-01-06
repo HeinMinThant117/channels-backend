@@ -27,8 +27,20 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.post("/register", (req, res) => {
-  res.send("Registration");
+app.post("/register", async (req, res) => {
+  const { username, code } = req.body;
+  const userRef = db.collection("users");
+  const userSnapshot = await userRef
+    .where("username", "==", username)
+    .limit(1)
+    .get();
+
+  if (!userSnapshot.empty) {
+    res.status(409).json({ error: "User already exists" });
+  }
+
+  await userRef.add({ username, code });
+  res.status(201).json({ message: "Succesfully created user" });
 });
 
 app.post("/login", async (req, res) => {
