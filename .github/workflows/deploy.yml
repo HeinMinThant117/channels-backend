@@ -1,0 +1,18 @@
+name: deploy node js to EC2
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  name: Deploy
+  runs-on: ubuntu-latest
+  steps:
+    - name: deploying with ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_CHANNELS_EC2_HOST }}
+        username: ${{ secrets.SSH_CHANNELS_USERNAME }}
+        key: ${{ secrets.CHANNELS_KEY }}
+        port: 22
+        script: whoami
