@@ -15,4 +15,7 @@ jobs:
           username: ${{ secrets.SSH_CHANNELS_USERNAME }}
           key: ${{ secrets.CHANNELS_KEY }}
           port: 22
-          script: ls
+          script: |
+            cd channels-backend
+            git pull origin main
+            
