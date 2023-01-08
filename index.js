@@ -88,12 +88,6 @@ app.get("/me", async (req, res) => {
   console.log(user);
 
   res.send("Hello");
-
-  // if (!user.exists) {
-  // res.send("User does not exist");
-  // } else {
-  // res.json(user.data());
-  // }
 });
 
 app.listen(port, () => {
