@@ -24,7 +24,7 @@ function generateAccessToken(username) {
 }
 
 app.get("/", (req, res) => {
-  res.send("Actions changed this message");
+  res.send("This is done automated");
 });
 
 app.post("/register", async (req, res) => {

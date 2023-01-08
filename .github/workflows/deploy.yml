@@ -18,5 +18,4 @@ jobs:
           script: |
             cd channels-backend
             git pull origin main
-            whoami
 
