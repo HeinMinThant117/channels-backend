@@ -15,4 +15,4 @@ jobs:
           username: ${{ secrets.SSH_CHANNELS_USERNAME }}
           key: ${{ secrets.CHANNELS_KEY }}
           port: 22
-          script: whoami
+          script: ls
