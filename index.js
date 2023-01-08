@@ -6,7 +6,7 @@ const { getFirestore } = require("firebase-admin/firestore");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 
-const serviceAccount = require("./channels-3f2a1-firebase-adminsdk-8hxgc-0d28cb5890.json");
+const serviceAccount = require("./channels-3f2a1-firebase-adminsdk-8hxgc-db8a62cbe2.json");
 
 app.use(bodyParser.json());
 dotenv.config();
