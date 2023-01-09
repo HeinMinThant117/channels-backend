@@ -5,6 +5,7 @@ const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
+const bcrypt = requrie("");
 
 const serviceAccount = require("./channels_key.json");
 
@@ -28,7 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const { username, code } = req.body;
+  const { username, password } = req.body;
   const userRef = db.collection("users");
   const userSnapshot = await userRef
     .where("username", "==", username)
@@ -39,12 +40,12 @@ app.post("/register", async (req, res) => {
     res.status(409).json({ error: "User already exists" });
   }
 
-  await userRef.add({ username, code });
+  await userRef.add({ username, password });
   res.status(201).json({ message: "Succesfully created user" });
 });
 
 app.post("/login", async (req, res) => {
-  const { username, code } = req.body;
+  const { username, password } = req.body;
   const userRef = db.collection("users");
   const userSnapshot = await userRef
     .where("username", "==", username)
@@ -58,11 +59,13 @@ app.post("/login", async (req, res) => {
   let currentUser = null;
   userSnapshot.forEach((doc) => (currentUser = doc.data()));
 
-  if (currentUser.code === code) {
+  if (currentUser.password === password) {
     const token = generateAccessToken(username);
     res.status(200).json({ token, username });
   } else {
-    res.status(401).json({ message: "Invalid code" });
+    res
+      .status(401)
+      .json({ message: "Wrong username or password. Please try again." });
   }
 });
 
