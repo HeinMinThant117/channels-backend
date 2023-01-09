@@ -5,7 +5,7 @@ const { initializeApp, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
-const bcrypt = requrie("");
+const bcrypt = require("bcrypt");
 
 const serviceAccount = require("./channels_key.json");
 
@@ -28,8 +28,17 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
+app.get("/health", (req, res) => {
+  res.send("OK");
+});
+
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
+
+  if (!username || !password) {
+    res.send("Incorrect amount of credentials");
+  }
+
   const userRef = db.collection("users");
   const userSnapshot = await userRef
     .where("username", "==", username)
@@ -37,10 +46,12 @@ app.post("/register", async (req, res) => {
     .get();
 
   if (!userSnapshot.empty) {
-    res.status(409).json({ error: "User already exists" });
+    return res.status(409).json({ error: "User already exists" });
   }
 
-  await userRef.add({ username, password });
+  let passwordHash = await bcrypt.hash(password, 10);
+
+  await userRef.add({ username, password: passwordHash });
   res.status(201).json({ message: "Succesfully created user" });
 });
 
@@ -53,13 +64,17 @@ app.post("/login", async (req, res) => {
     .get();
 
   if (userSnapshot.empty) {
-    res.status(404).json({ error: "User does not exist" });
+    return res.status(404).json({ error: "User does not exist" });
   }
 
   let currentUser = null;
   userSnapshot.forEach((doc) => (currentUser = doc.data()));
 
-  if (currentUser.password === password) {
+  let hashCompareResult = await bcrypt.compare(password, currentUser.password);
+
+  console.log(hashCompareResult);
+
+  if (hashCompareResult) {
     const token = generateAccessToken(username);
     res.status(200).json({ token, username });
   } else {
@@ -78,7 +93,6 @@ app.post("/user", async (req, res) => {
 app.get("/me", async (req, res) => {
   const userRef = db.collection("users");
   const snapshot = await userRef.where("username", "==", "hein").limit(1).get();
-
   if (snapshot.empty) {
     console.log("User does not exist");
     res.send("User does not exist");
