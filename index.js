@@ -6,9 +6,11 @@ const { getFirestore } = require("firebase-admin/firestore");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
 
 const serviceAccount = require("./channels_key.json");
 
+app.use(cors());
 app.use(bodyParser.json());
 dotenv.config();
 
@@ -80,7 +82,7 @@ app.post("/login", async (req, res) => {
   } else {
     res
       .status(401)
-      .json({ message: "Wrong username or password. Please try again." });
+      .json({ error: "Wrong username or password. Please try again." });
   }
 });
 
